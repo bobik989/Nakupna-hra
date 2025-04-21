@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nákupná hra</title>
+    <style>
+        :root {
+            --primary-color: #3366cc;
+            --success-color: #009933;
+            --error-color: #cc0000;
+            --warning-color: #ff9900;
+            --background-color: #f5f5f5;
+            --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        h1, h2, h3 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+            margin: 5px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-error {
+            background-color: var(--error-color);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-gray {
+            background-color: #666666;
+            color: white;
+        }
+        
+        .btn-menu {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+        
+        .product-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .product {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            width: 120px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background-color: white;
+        }
+        
+        .product img {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 5px;
+            object-fit: contain;
+        }
+        
+        .product-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        
+        .product-price {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .cart-summary {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .cart-items {
+            text-align: left;
+            margin: 10px 0;
+            min-height: 50px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            border: 1px solid #eee;
+        }
+        
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            background-color: #e6f2ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .info-item {
+            text-align: center;
+            padding: 5px;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .modal {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .modal-content {
+            margin-bottom: 20px;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+        }
+        
+        .star-rating {
+            color: gold;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+        }
+        
+        .help-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: none;
+        }
+        
+        @media (max-width: 600px) {
+            .product {
+                width: 100px;
+            }
+            
+            .product img {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .modal {
+                width: 95%;
+                padding: 15px;
+            }
+        }
+        
+        /* Animation for notifications */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .notification.success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .notification.error {
+            background-color: var(--error-color);
+            color: white;
+        }
+        
+        .notification.warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        /* Style for the duel screen */
+        .player-info {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        /* Time counter style */
+        .time-counter {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .time-warning {
+            color: var(--warning-color);
+        }
+        
+        .time-danger {
+            color: var(--error-color);
+            animation: pulse 1s infinite;
+        }
+        
+        /* Player form styles */
+        .player-form {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        /* Hide screens initially */
+        #training-screen, #stars-screen, #duel-screen, #time-screen, #duel-form {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sound effects - hidden audio elements -->
+<audio id="sound-click" preload="auto">
+    <source src="ding.wav" type="audio/wav">
+</audio>
+<audio id="sound-success" preload="auto">
+    <source src="success.wav" type="audio/wav">
+</audio>
+<audio id="sound-error" preload="auto">
+    <source src="fail.wav" type="audio/wav">
+</audio>
+
+    <!-- Main menu screen -->
+    <div id="menu-screen" class="container">
+        <h1>Nákupná hra</h1>
+        <h3>Vyber si režim hry:</h3>
+        
+        <button id="btn-training" class="btn-menu btn-primary">1. Tréning (bez bodov)</button>
+        <button id="btn-stars" class="btn-menu btn-primary">2. Na body (hviezdičky)</button>
+        <button id="btn-duel" class="btn-menu btn-primary">3. Súboj pre 2 hráčov</button>
+        <button id="btn-time" class="btn-menu btn-primary">4. Na čas</button>
+        
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid #ccc;">
+        
+        <button id="btn-exit" class="btn-menu btn-error">Ukončiť hru</button>
+        
+        <p style="text-align: center; margin-top: 20px; font-size: 0.8rem; color: #666;">
+            © 2025 Nákupná hra - Webová verzia
+        </p>
+    </div>
+    
+    <!-- Training mode screen -->
+    <div id="training-screen" class="container">
+        <button class="help-button">?</button>
+        <h2>Tréningový režim</h2>
+        
+        <h3 id="training-target">Cieľ: Nakúp presne za 0.00 €</h3>
+        
+        <div class="product-container" id="training-products">
+            <!-- Products will be added here dynamically -->
+        </div>
+        
+        <div class="cart-summary">
+            <div id="training-total" style="font-weight: bold; font-size: 1.2rem;">Suma: 0.00 €</div>
+            <div style="margin-top: 10px;">Košík:</div>
+            <div id="training-cart" class="cart-items">Košík je prázdny.</div>
+        </div>
+        
+        <div class="button-container">
+            <button id="training-check" class="btn-success">Hotovo</button>
+            <button id="training-reset" class="btn-primary">Reštartovať</button>
+            <button id="training-back" class="btn-gray">Späť do menu</button>
+        </div>
+    </div>
+    
+    <!-- Stars mode screen -->
+    <div id="stars-screen" class="container">
+        <button class="help-button">?</button>
+        <h2>Na body (hviezdičky)</h2>
+        
+        <div class="info-panel">
+            <div class="info-item" id="stars-level">Level: 1</div>
+            <div class="info-item" id="stars-score">Skóre: 0</div>
+            <div class="info-item" id="stars-rating"><span class="star-rating">☆☆☆☆☆</span></div>
+            <div class="info-item" id="stars-mistakes">Chyby: 0</div>
+        </div>
+        
+        <h3 id="stars-target">Cieľ: Nakúp presne za 0.00 €</h3>
+        
+        <div class="product-container" id="stars-products">
+            <!-- Products will be added here dynamically -->
+        </div>
+        
+        <div class="cart-summary">
+            <div id="stars-total" style="font-weight: bold; font-size: 1.2rem;">Suma: 0.00 €</div>
+            <div style="margin-top: 10px;">Košík:</div>
+            <div id="stars-cart" class="cart-items">Košík je prázdny.</div>
+        </div>
+        
+        <div class="button-container">
+            <button id="stars-check" class="btn-success">Hotovo</button>
+            <button id="stars-reset" class="btn-primary">Reštartovať</button>
+            <button id="stars-back" class="btn-gray">Späť do menu</button>
+        </div>
+    </div>
+    
+    <!-- Duel player form -->
+    <div id="duel-form" class="container">
+        <button class="help-button">?</button>
+        <h2>Súboj pre dvoch hráčov</h2>
+        
+        <div class="player-form">
+            <div class="form-group">
+                <label for="player1-name">Hráč 1:</label>
+                <input type="text" id="player1-name" placeholder="Zadaj meno prvého hráča">
+            </div>
+            
+            <div class="form-group">
+                <label for="player2-name">Hráč 2:</label>
+                <input type="text" id="player2-name" placeholder="Zadaj meno druhého hráča">
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <button id="duel-start" class="btn-success">Začať súboj</button>
+            <button id="duel-form-back" class="btn-gray">Späť do menu</button>
+        </div>
+    </div>
+    
+    <!-- Duel mode screen -->
+    <div id="duel-screen" class="container">
+        <button class="help-button">?</button>
+        <h2>Súboj</h2>
+        
+        <div class="player-info" id="duel-player-info">Hráč 1 - Level 1</div>
+        
+        <h3 id="duel-target">Cieľ: Nakúp presne za 0.00 €</h3>
+        
+        <div class="product-container" id="duel-products">
+            <!-- Products will be added here dynamically -->
+        </div>
+        
+        <div class="cart-summary">
+            <div id="duel-total" style="font-weight: bold; font-size: 1.2rem;">Suma: 0.00 €</div>
+            <div style="margin-top: 10px;">Košík:</div>
+            <div id="duel-cart" class="cart-items">Košík je prázdny.</div>
+        </div>
+        
+        <div class="button-container">
+            <button id="duel-check" class="btn-success">Hotovo</button>
+            <button id="duel-reset" class="btn-primary">Reštartovať</button>
+            <button id="duel-back" class="btn-gray">Späť do menu</button>
+        </div>
+    </div>
+    
+    <!-- Time mode screen -->
+    <div id="time-screen" class="container">
+        <button class="help-button">?</button>
+        <h2>Na čas</h2>
+        
+        <div class="info-panel">
+            <div class="info-item" id="time-level">Level: 1</div>
+            <div class="info-item" id="time-score">Skóre: 0</div>
+            <div class="info-item time-counter" id="time-counter">Čas: 60s</div>
+        </div>
+        
+        <h3 id="time-target">Cieľ: Nakúp presne za 0.00 €</h3>
+        
+        <div class="product-container" id="time-products">
+            <!-- Products will be added here dynamically -->
+        </div>
+        
+        <div class="cart-summary">
+            <div id="time-total" style="font-weight: bold; font-size: 1.2rem;">Suma: 0.00 €</div>
+            <div style="margin-top: 10px;">Košík:</div>
+            <div id="time-cart" class="cart-items">Košík je prázdny.</div>
+        </div>
+        
+        <div class="button-container">
+            <button id="time-check" class="btn-success">Hotovo</button>
+            <button id="time-reset" class="btn-primary">Reštartovať</button>
+            <button id="time-back" class="btn-gray">Späť do menu</button>
+        </div>
+    </div>
+
+    <!-- Pripojenie JavaScript súboru -->
+    <script src="nakupna-hra.js"></script>
+</body>
+</html>
